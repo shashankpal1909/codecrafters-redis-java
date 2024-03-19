@@ -19,10 +19,17 @@ public class Main {
 			clientSocket = serverSocket.accept();
 			
 			DataInputStream inputStream = new DataInputStream(clientSocket.getInputStream());
-			System.out.println("received byte = " + inputStream.readByte());
-			
 			OutputStream outputStream = clientSocket.getOutputStream();
-			outputStream.write("+PONG\r\n".getBytes(StandardCharsets.UTF_8));
+			
+			while (true) {
+				byte[] bytes = new byte[256];
+				int n = inputStream.read(bytes);
+				
+				if (n == -1) break;
+				
+				System.out.printf("received %s bytes: %s%n", n, new String(bytes));
+				outputStream.write("+PONG\r\n".getBytes(StandardCharsets.UTF_8));
+			}
 			
 		} catch (IOException e) {
 			System.out.println("IOException: " + e.getMessage());
