@@ -7,11 +7,18 @@ import com.shashank.redis.protocol.ProtocolEncoder;
 import java.lang.reflect.InvocationTargetException;
 
 public class ObjectFactory {
+	
+	private final NodeConfig nodeConfig;
 	private ProtocolDecoder protocolDecoder;
 	private ProtocolEncoder protocolEncoder;
 	private CommandFactory commandFactory;
 	
-	public ObjectFactory() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+	public ObjectFactory(NodeConfig nodeConfig) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+		this.nodeConfig = nodeConfig;
+		init();
+	}
+	
+	private void init() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 		protocolDecoder = new ProtocolDecoder();
 		protocolEncoder = new ProtocolEncoder();
 		commandFactory = new CommandFactory(this);

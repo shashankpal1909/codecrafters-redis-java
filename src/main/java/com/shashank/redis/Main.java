@@ -12,8 +12,8 @@ public class Main {
 	public static void main(String[] args) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 		System.out.println("Redis Starting Up...");
 		
-		NodeConfig nodeConfig = new NodeConfig();
-		ObjectFactory objectFactory = new ObjectFactory();
+		NodeConfig nodeConfig = new NodeConfig(args);
+		ObjectFactory objectFactory = new ObjectFactory(nodeConfig);
 		
 		try (ServerSocket serverSocket = new ServerSocket(nodeConfig.getPort())) {
 			serverSocket.setReuseAddress(true);
