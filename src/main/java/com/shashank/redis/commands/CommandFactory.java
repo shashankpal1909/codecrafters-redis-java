@@ -33,7 +33,7 @@ public class CommandFactory {
 	
 	private enum Command {
 		
-		ECHO(Echo.class), PING(Ping.class), SET(Set.class), GET(Get.class);
+		ECHO(Echo.class), PING(Ping.class), SET(Set.class), GET(Get.class), INFO(Info.class);
 		
 		private final Class<? extends Handler> handler;
 		

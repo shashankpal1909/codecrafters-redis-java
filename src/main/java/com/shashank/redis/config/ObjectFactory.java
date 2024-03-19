@@ -36,4 +36,7 @@ public class ObjectFactory {
 		return commandFactory;
 	}
 	
+	public NodeConfig getNodeConfig() {
+		return nodeConfig;
+	}
 }
