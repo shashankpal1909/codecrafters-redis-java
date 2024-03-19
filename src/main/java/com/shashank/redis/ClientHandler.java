@@ -3,6 +3,7 @@ package com.shashank.redis;
 import com.shashank.redis.commands.CommandFactory;
 import com.shashank.redis.commands.Handler;
 import com.shashank.redis.config.ObjectFactory;
+import com.shashank.redis.exception.EndOfStreamException;
 import com.shashank.redis.protocol.ProtocolDecoder;
 
 import java.io.DataInputStream;
@@ -35,6 +36,8 @@ public class ClientHandler extends Thread {
 				outputStream.write(response);
 				outputStream.flush();
 			}
+		} catch (EndOfStreamException e) {
+			System.out.println("End of input stream reached");
 		} catch (IOException e) {
 			System.out.println("IOException: " + e.getMessage());
 		} finally {

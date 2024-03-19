@@ -1,6 +1,9 @@
 package com.shashank.redis.protocol;
 
+import com.shashank.redis.exception.EndOfStreamException;
+
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,6 +20,8 @@ public class ProtocolDecoder {
 				case '+' -> decodeSimpleString(stream);
 				default -> throw new RuntimeException(String.format("Unknown character: %s", ch));
 			};
+		} catch (EOFException e) {
+			throw new EndOfStreamException();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
