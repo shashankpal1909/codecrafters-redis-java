@@ -1,17 +1,23 @@
 package com.shashank.redis;
 
+import com.shashank.redis.config.NodeConfig;
+import com.shashank.redis.config.ObjectFactory;
+
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 
 public class Main {
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 		System.out.println("Redis Starting Up...");
 		
-		int port = 6379;
-		try (ServerSocket serverSocket = new ServerSocket(port)) {
+		NodeConfig nodeConfig = new NodeConfig();
+		ObjectFactory objectFactory = new ObjectFactory();
+		
+		try (ServerSocket serverSocket = new ServerSocket(nodeConfig.getPort())) {
 			serverSocket.setReuseAddress(true);
-			while (true) new ClientHandler(serverSocket.accept()).start();
+			while (true) new ClientHandler(serverSocket.accept(), objectFactory).start();
 		}
 	}
 	

@@ -1,17 +1,25 @@
 package com.shashank.redis;
 
+import com.shashank.redis.commands.CommandFactory;
+import com.shashank.redis.commands.Handler;
+import com.shashank.redis.config.ObjectFactory;
+import com.shashank.redis.protocol.ProtocolDecoder;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class ClientHandler extends Thread {
 	
 	private final Socket socket;
+	private final ProtocolDecoder protocolDecoder;
+	private final CommandFactory commandFactory;
 	
-	public ClientHandler(Socket socket) {
+	public ClientHandler(Socket socket, ObjectFactory objectFactory) {
 		this.socket = socket;
+		this.protocolDecoder = objectFactory.getProtocolDecoder();
+		this.commandFactory = objectFactory.getCommandFactory();
 		System.out.println("client socket = " + socket + " connected!");
 	}
 	
@@ -19,13 +27,13 @@ public class ClientHandler extends Thread {
 	public void run() {
 		try (DataInputStream inputStream = new DataInputStream(socket.getInputStream()); OutputStream outputStream = socket.getOutputStream()) {
 			while (true) {
-				byte[] bytes = new byte[256];
-				int n = inputStream.read(bytes);
-				
-				if (n == -1) break;
-				
-				System.out.printf("received %s bytes: %s%n", n, new String(bytes));
-				outputStream.write("+PONG\r\n".getBytes(StandardCharsets.UTF_8));
+				String commandString = protocolDecoder.decode(inputStream);
+				String[] args = commandString.split(" ");
+				String command = args[0].toUpperCase();
+				Handler handler = commandFactory.getCommandHandler(command);
+				byte[] response = handler.execute(args);
+				outputStream.write(response);
+				outputStream.flush();
 			}
 		} catch (IOException e) {
 			System.out.println("IOException: " + e.getMessage());
