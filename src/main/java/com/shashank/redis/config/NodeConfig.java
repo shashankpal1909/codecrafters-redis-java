@@ -6,7 +6,22 @@ public class NodeConfig {
 	private Role role = Role.MASTER;
 	private ReplicaConfig replicaConfig;
 	
+	private String replicationId;
+	private Long replicationOffSet;
+	
 	public NodeConfig(String[] args) {
+		parseArgs(args);
+		if (role == Role.MASTER) {
+			setInitialMasterConfig();
+		}
+	}
+	
+	private void setInitialMasterConfig() {
+		this.replicationId = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
+		this.replicationOffSet = 0L;
+	}
+	
+	private void parseArgs(String[] args) {
 		for (int i = 0; i < args.length; i++) {
 			String param = args[i].toLowerCase().substring(2);
 			switch (param) {
@@ -30,6 +45,14 @@ public class NodeConfig {
 	
 	public ReplicaConfig getReplicaConfig() {
 		return replicaConfig;
+	}
+	
+	public String getReplicationId() {
+		return replicationId;
+	}
+	
+	public Long getReplicationOffSet() {
+		return replicationOffSet;
 	}
 	
 	private enum Role {
