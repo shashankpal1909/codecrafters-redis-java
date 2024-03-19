@@ -9,7 +9,7 @@ public class ProtocolDecoder {
 	
 	public String decode(DataInputStream stream) {
 		try {
-			char ch = stream.readChar();
+			char ch = (char) stream.readByte();
 			
 			return switch (ch) {
 				case '*' -> decodeArray(stream);

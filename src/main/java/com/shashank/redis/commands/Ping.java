@@ -10,7 +10,7 @@ public class Ping extends CommandHandler {
 	
 	@Override
 	public byte[] execute(String[] args) {
-		return objectFactory.getProtocolEncoder().simpleString("PING");
+		return objectFactory.getProtocolEncoder().simpleString("PONG");
 	}
 	
 }
