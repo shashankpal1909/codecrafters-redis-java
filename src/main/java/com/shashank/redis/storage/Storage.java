@@ -25,6 +25,7 @@ public class Storage {
 		
 		if (Instant.now().isAfter(data.expiry())) {
 			remove(key);
+			return null;
 		}
 		
 		return data.value();
