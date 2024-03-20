@@ -31,7 +31,10 @@ public class ReplicaInitializer extends Thread {
 	public void run() {
 		ReplicaConfig replicaConfig = nodeConfig.getReplicaConfig();
 		
-		try (Socket masterSocket = new Socket(replicaConfig.host(), replicaConfig.port()); DataInputStream inputStream = new DataInputStream(masterSocket.getInputStream()); OutputStream outputStream = masterSocket.getOutputStream()) {
+		try (Socket masterSocket = new Socket(replicaConfig.host(), replicaConfig.port())) {
+			DataInputStream inputStream = new DataInputStream(masterSocket.getInputStream());
+			OutputStream outputStream = masterSocket.getOutputStream();
+			
 			initializeReplica(inputStream, outputStream);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

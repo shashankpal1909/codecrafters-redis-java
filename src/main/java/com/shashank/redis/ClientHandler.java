@@ -36,9 +36,13 @@ public class ClientHandler extends Thread {
 	
 	@Override
 	public void run() {
-		try (DataInputStream inputStream = new DataInputStream(socket.getInputStream()); OutputStream outputStream = socket.getOutputStream()) {
+		try {
+			DataInputStream inputStream = new DataInputStream(socket.getInputStream());
+			OutputStream outputStream = socket.getOutputStream();
+			
 			while (true) {
 				String commandString = protocolDecoder.decode(inputStream);
+				System.out.printf("command received: %s\n", commandString);
 				
 				String[] args = commandString.split(" ");
 				String command = args[0].toUpperCase();
@@ -54,6 +58,7 @@ public class ClientHandler extends Thread {
 					outputStream.write(response);
 					outputStream.flush();
 					
+					System.out.printf("response sent: %s\n", new String(response));
 					break;
 				}
 				
@@ -63,11 +68,22 @@ public class ClientHandler extends Thread {
 				
 				outputStream.write(response);
 				outputStream.flush();
+				
+				System.out.printf("response sent: %s\n", new String(response));
 			}
 		} catch (EndOfStreamException e) {
 			System.out.println("End of input stream reached");
 		} catch (IOException e) {
 			System.out.println("IOException: " + e.getMessage());
+		} finally {
+			try {
+				if (!isReplicaSocket) {
+					socket.close();
+					System.out.println("client socket = " + socket + " disconnected!");
+				}
+			} catch (IOException e) {
+				System.out.println("IOException: " + e.getMessage());
+			}
 		}
 	}
 }

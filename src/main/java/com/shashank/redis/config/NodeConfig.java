@@ -13,17 +13,17 @@ public class NodeConfig {
 	private String replicationId;
 	private Long replicationOffSet;
 	
-	private List<Socket> replicas;
+	private final List<Socket> replicas;
 	
 	public NodeConfig(String[] args) {
+		this.replicas = new ArrayList<>();
+		
 		parseArgs(args);
-		if (role == Role.MASTER) {
-			setInitialMasterConfig();
-		}
+		
+		if (role == Role.MASTER) setInitialMasterConfig();
 	}
 	
 	private void setInitialMasterConfig() {
-		this.replicas = new ArrayList<>();
 		this.replicationId = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
 		this.replicationOffSet = 0L;
 	}
