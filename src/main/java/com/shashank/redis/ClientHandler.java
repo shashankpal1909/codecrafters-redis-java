@@ -68,15 +68,6 @@ public class ClientHandler extends Thread {
 			System.out.println("End of input stream reached");
 		} catch (IOException e) {
 			System.out.println("IOException: " + e.getMessage());
-		} finally {
-			try {
-				if (!isReplicaSocket) {
-					socket.close();
-					System.out.println("client socket = " + socket + " disconnected!");
-				}
-			} catch (IOException e) {
-				System.out.println("IOException: " + e.getMessage());
-			}
 		}
 	}
 }
