@@ -2,8 +2,6 @@ package com.shashank.redis.commands;
 
 import com.shashank.redis.config.ObjectFactory;
 
-import java.util.Base64;
-
 public class PSync extends CommandHandler {
 	
 	public PSync(ObjectFactory objectFactory) {
