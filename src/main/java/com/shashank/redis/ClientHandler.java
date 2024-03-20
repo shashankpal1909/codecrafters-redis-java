@@ -41,7 +41,7 @@ public class ClientHandler extends Thread {
 			OutputStream outputStream = socket.getOutputStream();
 			
 			while (true) {
-				String commandString = protocolDecoder.decode(inputStream);
+				String commandString = protocolDecoder.decode(inputStream).data();
 				System.out.printf("command received: %s\n", commandString);
 				
 				String[] args = commandString.split(" ");

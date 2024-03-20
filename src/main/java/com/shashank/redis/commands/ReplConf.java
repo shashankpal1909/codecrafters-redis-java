@@ -28,7 +28,9 @@ public class ReplConf extends CommandHandler {
 				}
 			}
 			case "getack" -> {
-				return objectFactory.getProtocolEncoder().array(List.of("REPLCONF", "ACK", "0"));
+				Long replicationOffSet = objectFactory.getNodeConfig().getReplicationOffSet();
+				return objectFactory.getProtocolEncoder().array(List.of("REPLCONF", "ACK",
+						String.valueOf(replicationOffSet)));
 			}
 			default -> throw new IllegalStateException("Unexpected value: " + param);
 		}

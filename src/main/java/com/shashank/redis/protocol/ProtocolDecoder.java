@@ -5,21 +5,22 @@ import com.shashank.redis.exception.EndOfStreamException;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ProtocolDecoder {
 	
-	public String decode(DataInputStream stream) {
+	public DecodedData<String> decode(DataInputStream stream) {
 		try {
 			char ch = (char) stream.readByte();
 			
-			return switch (ch) {
+			var data = switch (ch) {
 				case '*' -> decodeArray(stream);
 				case '$' -> decodeBulkString(stream);
 				case '+' -> decodeSimpleString(stream);
 				default -> throw new RuntimeException(String.format("Unknown character: %s", ch));
 			};
+			
+			return new DecodedData<>(data.data().trim(), data.bytesCount() + 1);
 		} catch (EOFException e) {
 			throw new EndOfStreamException();
 		} catch (IOException e) {
@@ -27,37 +28,53 @@ public class ProtocolDecoder {
 		}
 	}
 	
-	private String decodeArray(DataInputStream stream) throws IOException {
-		int arrayLength = readDigits(stream);
+	private DecodedData<String> decodeArray(DataInputStream stream) throws IOException {
+		DecodedData<Integer> decodedDigits = readDigits(stream);
+		int arrayLength = decodedDigits.data();
 		
-		return IntStream.range(0, arrayLength).mapToObj(i -> decode(stream)).collect(Collectors.joining(" "));
+		return IntStream.range(0, arrayLength).mapToObj(i -> decode(stream)).reduce(new DecodedData<>("",
+				decodedDigits.bytesCount()), (first, second) -> new DecodedData<>(first.data() + " " + second.data(),
+				first.bytesCount() + second.bytesCount()));
 	}
 	
-	private String decodeBulkString(DataInputStream stream) throws IOException {
-		int stringLength = readDigits(stream);
+	private DecodedData<String> decodeBulkString(DataInputStream stream) throws IOException {
+		long bytesCount = 0L;
+		
+		DecodedData<Integer> decodedDigits = readDigits(stream);
+		int stringLength = decodedDigits.data();
+		
+		bytesCount += decodedDigits.bytesCount();
 		
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < stringLength; i++) {
 			stringBuilder.append((char) stream.readByte());
+			bytesCount++;
 		}
 		
 		// Skip `/r/n`
 		stream.readByte();
 		stream.readByte();
 		
-		return stringBuilder.toString();
+		bytesCount += 2;
+		
+		return new DecodedData<>(stringBuilder.toString(), bytesCount);
 	}
 	
-	private String decodeSimpleString(DataInputStream stream) throws IOException {
+	private DecodedData<String> decodeSimpleString(DataInputStream stream) throws IOException {
+		long bytesCount = 1L;
+		
 		StringBuilder stringBuilder = new StringBuilder();
 		for (char ch = (char) stream.readByte(); ch != '\r'; ch = (char) stream.readByte()) {
 			stringBuilder.append(ch);
+			bytesCount++;
 		}
 		
 		// Skip `\n`
 		stream.readByte();
 		
-		return stringBuilder.toString();
+		bytesCount++;
+		
+		return new DecodedData<>(stringBuilder.toString(), bytesCount);
 	}
 	
 	public String decodeRDbFile(DataInputStream stream) throws IOException {
@@ -65,7 +82,7 @@ public class ProtocolDecoder {
 		
 		if (ch != '$') throw new RuntimeException(String.format("Unexpected start of RDB file: %s", ch));
 		
-		int stringLength = readDigits(stream);
+		int stringLength = readDigits(stream).data();
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < stringLength; i++) {
 			stringBuilder.append((char) stream.readByte());
@@ -75,16 +92,20 @@ public class ProtocolDecoder {
 	}
 	
 	
-	private int readDigits(DataInputStream stream) throws IOException {
+	private DecodedData<Integer> readDigits(DataInputStream stream) throws IOException {
+		long bytesCount = 1L;
+		
 		StringBuilder stringBuilder = new StringBuilder();
 		for (char ch = (char) stream.readByte(); ch != '\r'; ch = (char) stream.readByte()) {
 			stringBuilder.append(ch);
+			bytesCount++;
 		}
 		
 		// Skip `\n`
 		stream.readByte();
+		bytesCount++;
 		
-		return Integer.parseInt(stringBuilder.toString());
+		return new DecodedData<>(Integer.parseInt(stringBuilder.toString()), bytesCount);
 	}
 	
 }

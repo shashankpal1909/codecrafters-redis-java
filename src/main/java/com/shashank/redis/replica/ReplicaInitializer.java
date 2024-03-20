@@ -1,10 +1,13 @@
 package com.shashank.redis.replica;
 
-import com.shashank.redis.commands.*;
+import com.shashank.redis.commands.CommandFactory;
+import com.shashank.redis.commands.Handler;
+import com.shashank.redis.commands.ReplConf;
 import com.shashank.redis.config.NodeConfig;
 import com.shashank.redis.config.ObjectFactory;
 import com.shashank.redis.config.ReplicaConfig;
 import com.shashank.redis.exception.EndOfStreamException;
+import com.shashank.redis.protocol.DecodedData;
 import com.shashank.redis.protocol.ProtocolDecoder;
 import com.shashank.redis.protocol.ProtocolEncoder;
 
@@ -39,13 +42,17 @@ public class ReplicaInitializer extends Thread {
 			initializeReplica(inputStream, outputStream);
 			
 			while (true) {
-				String commandString = protocolDecoder.decode(inputStream);
+				DecodedData<String> decodedData = protocolDecoder.decode(inputStream);
+				
+				String commandString = decodedData.data();
 				System.out.printf("[master] command received: %s\n", commandString);
 				
 				String[] args = commandString.split(" ");
 				String command = args[0].toUpperCase();
 				Handler handler = commandFactory.getCommandHandler(command);
 				byte[] response = handler.execute(args);
+				
+				nodeConfig.setReplicationOffSet(nodeConfig.getReplicationOffSet() + decodedData.bytesCount());
 				
 				if (handler instanceof ReplConf) {
 					outputStream.write(response);
@@ -65,7 +72,7 @@ public class ReplicaInitializer extends Thread {
 		// Send a PING to master node
 		byte[] command = protocolEncoder.array(List.of("PING"));
 		outputStream.write(command);
-		String response = protocolDecoder.decode(inputStream);
+		String response = protocolDecoder.decode(inputStream).data();
 		if (!response.equalsIgnoreCase("PONG")) {
 			System.out.printf("Unexpected response for PING: %s\n", response);
 		} else {
@@ -75,7 +82,7 @@ public class ReplicaInitializer extends Thread {
 		// REPLCONF listening-port <PORT>
 		command = protocolEncoder.array(List.of("REPLCONF", "listening-port", String.valueOf(nodeConfig.getPort())));
 		outputStream.write(command);
-		response = protocolDecoder.decode(inputStream);
+		response = protocolDecoder.decode(inputStream).data();
 		if (!response.equalsIgnoreCase("OK")) {
 			System.out.printf("Unexpected response for REPLCONF listening-port: %s\n", response);
 		} else {
@@ -85,7 +92,7 @@ public class ReplicaInitializer extends Thread {
 		// REPLCONF capa psync2
 		command = protocolEncoder.array(List.of("REPLCONF", "capa", "psync2"));
 		outputStream.write(command);
-		response = protocolDecoder.decode(inputStream);
+		response = protocolDecoder.decode(inputStream).data();
 		if (!response.equalsIgnoreCase("OK")) {
 			System.out.printf("Unexpected response for REPLCONF capa: %s\n", response);
 		} else {
@@ -95,7 +102,7 @@ public class ReplicaInitializer extends Thread {
 		// PSYNC ? -1
 		command = protocolEncoder.array(List.of("PSYNC", "?", "-1"));
 		outputStream.write(command);
-		response = protocolDecoder.decode(inputStream);
+		response = protocolDecoder.decode(inputStream).data();
 		if (!response.startsWith("FULLRESYNC")) {
 			System.out.printf("Unexpected response for PSYNC: %s\n", response);
 		} else {

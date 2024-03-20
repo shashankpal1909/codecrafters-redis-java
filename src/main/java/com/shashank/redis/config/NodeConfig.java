@@ -6,14 +6,12 @@ import java.util.List;
 
 public class NodeConfig {
 	
+	private final List<Socket> replicas;
 	private int port = 6379;
 	private Role role = Role.MASTER;
 	private ReplicaConfig replicaConfig;
-	
 	private String replicationId;
-	private Long replicationOffSet;
-	
-	private final List<Socket> replicas;
+	private Long replicationOffSet = 0L;
 	
 	public NodeConfig(String[] args) {
 		this.replicas = new ArrayList<>();
@@ -21,11 +19,6 @@ public class NodeConfig {
 		parseArgs(args);
 		
 		if (role == Role.MASTER) setInitialMasterConfig();
-	}
-	
-	private void setInitialMasterConfig() {
-		this.replicationId = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
-		this.replicationOffSet = 0L;
 	}
 	
 	private void parseArgs(String[] args) {
@@ -40,6 +33,11 @@ public class NodeConfig {
 				default -> throw new RuntimeException("Invalid parameter: " + param);
 			}
 		}
+	}
+	
+	private void setInitialMasterConfig() {
+		this.replicationId = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
+		this.replicationOffSet = 0L;
 	}
 	
 	public int getPort() {
@@ -60,6 +58,10 @@ public class NodeConfig {
 	
 	public Long getReplicationOffSet() {
 		return replicationOffSet;
+	}
+	
+	public void setReplicationOffSet(Long replicationOffSet) {
+		this.replicationOffSet = replicationOffSet;
 	}
 	
 	public boolean isMaster() {

@@ -11,11 +11,13 @@ public class CommandFactory {
 	
 	private final Map<Command, Handler> commandHandlers = new EnumMap<>(Command.class);
 	
-	public CommandFactory(ObjectFactory objectFactory) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+	public CommandFactory(ObjectFactory objectFactory) throws NoSuchMethodException, InvocationTargetException,
+			InstantiationException, IllegalAccessException {
 		initHandlers(objectFactory);
 	}
 	
-	private void initHandlers(ObjectFactory objectFactory) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+	private void initHandlers(ObjectFactory objectFactory) throws NoSuchMethodException, InvocationTargetException,
+			InstantiationException, IllegalAccessException {
 		for (Command command : Command.values()) {
 			Constructor<? extends Handler> handlerConstructor = command.handler.getConstructor(ObjectFactory.class);
 			Handler handler = handlerConstructor.newInstance(objectFactory);
@@ -24,6 +26,7 @@ public class CommandFactory {
 	}
 	
 	public Handler getCommandHandler(String command) {
+		System.out.println("command = " + command);
 		Handler handler = commandHandlers.get(Command.valueOf(command));
 		if (handler == null) {
 			throw new RuntimeException("Unknown command: " + command);
@@ -33,7 +36,13 @@ public class CommandFactory {
 	
 	private enum Command {
 		
-		ECHO(Echo.class), PING(Ping.class), SET(Set.class), GET(Get.class), INFO(Info.class), REPLCONF(ReplConf.class), PSYNC(PSync.class);
+		ECHO(Echo.class),
+		PING(Ping.class),
+		SET(Set.class),
+		GET(Get.class),
+		INFO(Info.class),
+		REPLCONF(ReplConf.class),
+		PSYNC(PSync.class);
 		
 		private final Class<? extends Handler> handler;
 		
