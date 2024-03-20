@@ -1,12 +1,10 @@
 package com.shashank.redis.replica;
 
-import com.shashank.redis.commands.CommandFactory;
-import com.shashank.redis.commands.Handler;
-import com.shashank.redis.commands.PSync;
-import com.shashank.redis.commands.Replicable;
+import com.shashank.redis.commands.*;
 import com.shashank.redis.config.NodeConfig;
 import com.shashank.redis.config.ObjectFactory;
 import com.shashank.redis.config.ReplicaConfig;
+import com.shashank.redis.exception.EndOfStreamException;
 import com.shashank.redis.protocol.ProtocolDecoder;
 import com.shashank.redis.protocol.ProtocolEncoder;
 
@@ -49,11 +47,15 @@ public class ReplicaInitializer extends Thread {
 				Handler handler = commandFactory.getCommandHandler(command);
 				byte[] response = handler.execute(args);
 				
-				// outputStream.write(response);
-				// outputStream.flush();
-				//
-				// System.out.printf("[master] response sent: %s\n", new String(response));
+				if (handler instanceof ReplConf) {
+					outputStream.write(response);
+					outputStream.flush();
+					
+					System.out.printf("[master] response sent: %s\n", new String(response));
+				}
 			}
+		} catch (EndOfStreamException e) {
+			System.out.println("End of input stream reached");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

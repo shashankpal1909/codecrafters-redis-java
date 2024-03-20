@@ -2,6 +2,8 @@ package com.shashank.redis.commands;
 
 import com.shashank.redis.config.ObjectFactory;
 
+import java.util.List;
+
 public class ReplConf extends CommandHandler {
 	
 	public ReplConf(ObjectFactory objectFactory) {
@@ -24,6 +26,9 @@ public class ReplConf extends CommandHandler {
 				if (!java.util.Set.of("psync2", "eof").contains(args[2])) {
 					throw new RuntimeException(String.format("Invalid parameter: %s", args[2]));
 				}
+			}
+			case "getack" -> {
+				return objectFactory.getProtocolEncoder().array(List.of("REPLCONF", "ACK", "0"));
 			}
 			default -> throw new IllegalStateException("Unexpected value: " + param);
 		}
