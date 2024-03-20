@@ -73,7 +73,7 @@ public class ReplicaInitializer extends Thread {
 		command = protocolEncoder.array(List.of("PSYNC", "?", "-1"));
 		outputStream.write(command);
 		response = protocolDecoder.decode(inputStream);
-		if (!response.equalsIgnoreCase("OK")) {
+		if (!response.startsWith("FULLRESYNC")) {
 			System.out.printf("Unexpected response for PSYNC: %s\n", response);
 		} else {
 			System.out.printf("Received response for PSYNC: %s\n", response);
