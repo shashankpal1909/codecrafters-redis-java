@@ -11,7 +11,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.List;
 
 public class ReplicaInitializer extends Thread {
@@ -41,14 +40,37 @@ public class ReplicaInitializer extends Thread {
 	
 	private void initializeReplica(DataInputStream inputStream, OutputStream outputStream) throws IOException {
 		// Send a PING to master node
-		byte[] command = protocolEncoder.array(List.of("ping"));
+		byte[] command = protocolEncoder.array(List.of("PING"));
 		outputStream.write(command);
 		String response = protocolDecoder.decode(inputStream);
-		if (!response.equalsIgnoreCase("pong")) {
+		if (!response.equalsIgnoreCase("PONG")) {
 			System.out.printf("Unexpected response for PING: %s\n", response);
 		} else {
 			System.out.printf("Received response for PING: %s\n", response);
 		}
+		
+		// REPLCONF listening-port <PORT>
+		command = protocolEncoder.array(List.of("REPLCONF", "listening-port", String.valueOf(nodeConfig.getPort())));
+		outputStream.write(command);
+		response = protocolDecoder.decode(inputStream);
+		if (!response.equalsIgnoreCase("OK")) {
+			System.out.printf("Unexpected response for REPLCONF listening-port: %s\n", response);
+		} else {
+			System.out.printf("Received response for REPLCONF listening-port: %s\n", response);
+		}
+		
+		// REPLCONF capa psync2
+		command = protocolEncoder.array(List.of("REPLCONF", "capa", "psync2"));
+		outputStream.write(command);
+		response = protocolDecoder.decode(inputStream);
+		if (!response.equalsIgnoreCase("OK")) {
+			System.out.printf("Unexpected response for REPLCONF capa: %s\n", response);
+		} else {
+			System.out.printf("Received response for REPLCONF capa: %s\n", response);
+		}
 	}
 	
+	public CommandFactory getCommandFactory() {
+		return commandFactory;
+	}
 }
