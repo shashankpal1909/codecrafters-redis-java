@@ -68,6 +68,16 @@ public class ReplicaInitializer extends Thread {
 		} else {
 			System.out.printf("Received response for REPLCONF capa: %s\n", response);
 		}
+		
+		// PSYNC ? -1
+		command = protocolEncoder.array(List.of("PSYNC", "?", "-1"));
+		outputStream.write(command);
+		response = protocolDecoder.decode(inputStream);
+		if (!response.equalsIgnoreCase("OK")) {
+			System.out.printf("Unexpected response for PSYNC: %s\n", response);
+		} else {
+			System.out.printf("Received response for PSYNC: %s\n", response);
+		}
 	}
 	
 	public CommandFactory getCommandFactory() {

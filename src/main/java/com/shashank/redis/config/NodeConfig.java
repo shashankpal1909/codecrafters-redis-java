@@ -64,7 +64,7 @@ public class NodeConfig {
 	}
 	
 	private enum Role {
-		MASTER, SLAVE;
+		MASTER, SLAVE
 	}
 	
 }
