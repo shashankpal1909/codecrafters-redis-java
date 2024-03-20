@@ -87,7 +87,4 @@ public class ReplicaInitializer extends Thread {
 		System.out.println("Replica Initialized...");
 	}
 	
-	public CommandFactory getCommandFactory() {
-		return commandFactory;
-	}
 }
