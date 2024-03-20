@@ -8,6 +8,10 @@ public class ProtocolEncoder {
 	
 	private static final String CRLF = "\r\n";
 	
+	public byte[] integer(Integer value) {
+		return String.format(":%s%s", value, CRLF).getBytes();
+	}
+	
 	public byte[] simpleString(String value) {
 		return String.format("+%s%s", value, CRLF).getBytes();
 	}
