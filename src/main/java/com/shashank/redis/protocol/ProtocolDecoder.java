@@ -60,6 +60,20 @@ public class ProtocolDecoder {
 		return stringBuilder.toString();
 	}
 	
+	public String decodeRDbFile(DataInputStream stream) throws IOException {
+		char ch = (char) stream.readByte();
+		
+		if (ch != '$') throw new RuntimeException(String.format("Unexpected start of RDB file: %s", ch));
+		
+		int stringLength = readDigits(stream);
+		StringBuilder stringBuilder = new StringBuilder();
+		for (int i = 0; i < stringLength; i++) {
+			stringBuilder.append((char) stream.readByte());
+		}
+		
+		return stringBuilder.toString();
+	}
+	
 	
 	private int readDigits(DataInputStream stream) throws IOException {
 		StringBuilder stringBuilder = new StringBuilder();

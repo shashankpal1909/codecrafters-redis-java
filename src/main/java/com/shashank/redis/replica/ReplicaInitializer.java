@@ -78,6 +78,10 @@ public class ReplicaInitializer extends Thread {
 		} else {
 			System.out.printf("Received response for PSYNC: %s\n", response);
 		}
+		
+		String rDbFile = protocolDecoder.decodeRDbFile(inputStream);
+		System.out.printf("Received RDB File: %s", rDbFile);
+		System.out.println("Replica Initialized...");
 	}
 	
 	public CommandFactory getCommandFactory() {
