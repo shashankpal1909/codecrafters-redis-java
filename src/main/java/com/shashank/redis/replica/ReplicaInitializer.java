@@ -1,6 +1,9 @@
 package com.shashank.redis.replica;
 
 import com.shashank.redis.commands.CommandFactory;
+import com.shashank.redis.commands.Handler;
+import com.shashank.redis.commands.PSync;
+import com.shashank.redis.commands.Replicable;
 import com.shashank.redis.config.NodeConfig;
 import com.shashank.redis.config.ObjectFactory;
 import com.shashank.redis.config.ReplicaConfig;
@@ -36,6 +39,21 @@ public class ReplicaInitializer extends Thread {
 			OutputStream outputStream = masterSocket.getOutputStream();
 			
 			initializeReplica(inputStream, outputStream);
+			
+			while (true) {
+				String commandString = protocolDecoder.decode(inputStream);
+				System.out.printf("[master] command received: %s\n", commandString);
+				
+				String[] args = commandString.split(" ");
+				String command = args[0].toUpperCase();
+				Handler handler = commandFactory.getCommandHandler(command);
+				byte[] response = handler.execute(args);
+				
+				// outputStream.write(response);
+				// outputStream.flush();
+				//
+				// System.out.printf("[master] response sent: %s\n", new String(response));
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
