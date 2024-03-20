@@ -10,7 +10,7 @@ public class Wait extends CommandHandler {
 	
 	@Override
 	public byte[] execute(String[] args) {
-		return objectFactory.getProtocolEncoder().integer(0);
+		return objectFactory.getProtocolEncoder().integer(objectFactory.getNodeConfig().getReplicas().size());
 	}
 	
 }
