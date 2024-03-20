@@ -55,6 +55,14 @@ public class NodeConfig {
 		return replicationOffSet;
 	}
 	
+	public boolean isMaster() {
+		return role == Role.MASTER;
+	}
+	
+	public boolean isReplica() {
+		return role == Role.SLAVE;
+	}
+	
 	private enum Role {
 		MASTER, SLAVE;
 	}

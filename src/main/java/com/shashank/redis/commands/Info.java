@@ -26,7 +26,7 @@ public class Info extends CommandHandler {
 		NodeConfig nodeConfig = objectFactory.getNodeConfig();
 		String role = nodeConfig.getRole();
 		info.add(String.format("role:%s", role));
-		if (role.equals("master")) {
+		if (nodeConfig.isMaster()) {
 			info.add(String.format("master_replid:%s", nodeConfig.getReplicationId()));
 			info.add(String.format("master_repl_offset:%s", nodeConfig.getReplicationOffSet()));
 		}
