@@ -3,6 +3,7 @@ package com.shashank.redis.config;
 import com.shashank.redis.commands.CommandFactory;
 import com.shashank.redis.protocol.ProtocolDecoder;
 import com.shashank.redis.protocol.ProtocolEncoder;
+import com.shashank.redis.replica.CommandReplicator;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -12,6 +13,7 @@ public class ObjectFactory {
 	private ProtocolDecoder protocolDecoder;
 	private ProtocolEncoder protocolEncoder;
 	private CommandFactory commandFactory;
+	private CommandReplicator commandReplicator;
 	
 	public ObjectFactory(NodeConfig nodeConfig) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 		this.nodeConfig = nodeConfig;
@@ -22,6 +24,7 @@ public class ObjectFactory {
 		protocolDecoder = new ProtocolDecoder();
 		protocolEncoder = new ProtocolEncoder();
 		commandFactory = new CommandFactory(this);
+		commandReplicator = new CommandReplicator(this);
 	}
 	
 	public ProtocolDecoder getProtocolDecoder() {
@@ -38,5 +41,9 @@ public class ObjectFactory {
 	
 	public NodeConfig getNodeConfig() {
 		return nodeConfig;
+	}
+	
+	public CommandReplicator getCommandReplicator() {
+		return commandReplicator;
 	}
 }

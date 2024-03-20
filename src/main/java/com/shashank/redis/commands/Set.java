@@ -3,7 +3,7 @@ package com.shashank.redis.commands;
 import com.shashank.redis.config.ObjectFactory;
 import com.shashank.redis.storage.Storage;
 
-public class Set extends CommandHandler {
+public class Set extends CommandHandler implements Replicable {
 	
 	public Set(ObjectFactory objectFactory) {
 		super(objectFactory);

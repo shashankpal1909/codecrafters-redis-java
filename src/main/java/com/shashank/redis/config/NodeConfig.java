@@ -1,5 +1,9 @@
 package com.shashank.redis.config;
 
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
 public class NodeConfig {
 	
 	private int port = 6379;
@@ -9,6 +13,8 @@ public class NodeConfig {
 	private String replicationId;
 	private Long replicationOffSet;
 	
+	private List<Socket> replicas;
+	
 	public NodeConfig(String[] args) {
 		parseArgs(args);
 		if (role == Role.MASTER) {
@@ -17,6 +23,7 @@ public class NodeConfig {
 	}
 	
 	private void setInitialMasterConfig() {
+		this.replicas = new ArrayList<>();
 		this.replicationId = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
 		this.replicationOffSet = 0L;
 	}
@@ -61,6 +68,14 @@ public class NodeConfig {
 	
 	public boolean isReplica() {
 		return role == Role.SLAVE;
+	}
+	
+	public List<Socket> getReplicas() {
+		return replicas;
+	}
+	
+	public void addReplica(Socket socket) {
+		replicas.add(socket);
 	}
 	
 	private enum Role {
