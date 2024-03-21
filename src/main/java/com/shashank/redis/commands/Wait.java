@@ -54,10 +54,10 @@ public class Wait extends CommandHandler {
 		}
 		
 		// Get count of acknowledged replicas and reset counter
-		int ackNumber = acknowledgedReplicaCount.intValue();
+		int ackCount = acknowledgedReplicaCount.intValue();
 		acknowledgedReplicaCount.set(0);
 		
-		return objectFactory.getProtocolEncoder().integer(objectFactory.getNodeConfig().getReplicas().size());
+		return objectFactory.getProtocolEncoder().integer(ackCount == 0 ? replicas.size() : ackCount);
 	}
 	
 	private void getAcknowledgement(Socket replicaSocket) {
