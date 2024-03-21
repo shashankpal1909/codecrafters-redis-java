@@ -12,6 +12,8 @@ public class NodeConfig {
 	private ReplicaConfig replicaConfig;
 	private String replicationId;
 	private Long replicationOffSet = 0L;
+	private String rDBFileDir;
+	private String rDBFileName;
 	
 	public NodeConfig(String[] args) {
 		this.replicas = new ArrayList<>();
@@ -30,6 +32,8 @@ public class NodeConfig {
 					role = Role.SLAVE;
 					replicaConfig = new ReplicaConfig(args[++i], Integer.parseInt(args[++i]));
 				}
+				case "dir" -> rDBFileDir = args[++i];
+				case "dbfilename" -> rDBFileName = args[++i];
 				default -> throw new RuntimeException("Invalid parameter: " + param);
 			}
 		}
@@ -78,6 +82,14 @@ public class NodeConfig {
 	
 	public void addReplica(Socket socket) {
 		replicas.add(socket);
+	}
+	
+	public String getRDBFileDir() {
+		return rDBFileDir;
+	}
+	
+	public String getRDBFileName() {
+		return rDBFileName;
 	}
 	
 	private enum Role {

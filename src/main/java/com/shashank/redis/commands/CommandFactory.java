@@ -43,7 +43,8 @@ public class CommandFactory {
 		INFO(Info.class),
 		REPLCONF(ReplConf.class),
 		PSYNC(PSync.class),
-		WAIT(Wait.class);
+		WAIT(Wait.class),
+		CONFIG(Config.class);
 		
 		private final Class<? extends Handler> handler;
 		
