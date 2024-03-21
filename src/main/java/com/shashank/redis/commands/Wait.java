@@ -72,6 +72,7 @@ public class Wait extends CommandHandler {
 			String ackResponse = objectFactory.getProtocolDecoder().decode(inputStream).data();
 			System.out.printf("Ack response received: %s\n", ackResponse);
 			
+			acknowledgedReplicaCount.incrementAndGet();
 		} catch (IOException e) {
 			System.out.printf("Acknowledgement failed: %s\n", e.getMessage());
 		}
