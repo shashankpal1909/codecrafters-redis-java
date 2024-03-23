@@ -36,15 +36,8 @@ public class CommandFactory {
 	
 	private enum Command {
 		
-		ECHO(Echo.class),
-		PING(Ping.class),
-		SET(Set.class),
-		GET(Get.class),
-		INFO(Info.class),
-		REPLCONF(ReplConf.class),
-		PSYNC(PSync.class),
-		WAIT(Wait.class),
-		CONFIG(Config.class);
+		ECHO(Echo.class), PING(Ping.class), SET(Set.class), GET(Get.class), INFO(Info.class), REPLCONF(ReplConf.class)
+		, PSYNC(PSync.class), WAIT(Wait.class), CONFIG(Config.class), KEYS(Keys.class);
 		
 		private final Class<? extends Handler> handler;
 		
