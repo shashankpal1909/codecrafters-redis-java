@@ -164,15 +164,41 @@ public class RDBFileReader {
 		byte nextByte;
 		do {
 			nextByte = stream.readByte();
+			
+			Long expiresIn = null;
+			
+			if (nextByte == (byte) 0xFD || nextByte == (byte) 0xFC) {
+				expiresIn = readExpiryTime(stream, nextByte);
+				nextByte = stream.readByte();
+			}
+			
 			if (nextByte == 0) {
 				String key = readLengthEncodedString(stream);
 				System.out.println("Key = " + key);
 				String value = readLengthEncodedString(stream);
 				System.out.println("Value = " + value);
-				this.dataMap.put(key, new Data(value, Instant.MAX));
-				Storage.set(key, value);
+				
+				if (expiresIn == null) {
+					Storage.set(key, value);
+					this.dataMap.put(key, new Data(value, Instant.MAX));
+				} else {
+					Storage.set(key, value, expiresIn);
+					this.dataMap.put(key, new Data(value, Instant.now().plusMillis(expiresIn)));
+				}
 			}
 		} while (nextByte != -1);
+	}
+	
+	private long readExpiryTime(DataInputStream stream, byte flag) throws IOException {
+		long expireTime;
+		if (flag == (byte) 0xFD) {
+			expireTime = Integer.toUnsignedLong(stream.readInt());
+		} else if (flag == (byte) 0xFC) {
+			expireTime = stream.readLong();
+		} else {
+			throw new RuntimeException("Invalid expiry time flag");
+		}
+		return expireTime;
 	}
 	
 	public int getRdbVersion() {
