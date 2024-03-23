@@ -2,6 +2,7 @@ package com.shashank.redis.protocol;
 
 import com.ning.compress.lzf.LZFDecoder;
 import com.shashank.redis.storage.Data;
+import com.shashank.redis.storage.Storage;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -13,18 +14,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RDBFileReader {
 	
 	private final String filePath;
-	private int rdbVersion;
 	private final Map<String, Data> dataMap;
-	
-	public Map<String, Data> getDataMap() {
-		return dataMap;
-	}
+	private int rdbVersion;
 	
 	public RDBFileReader(String filePath) {
 		this.filePath = filePath;
 		this.dataMap = new ConcurrentHashMap<>();
 		
 		parse();
+	}
+	
+	public Map<String, Data> getDataMap() {
+		return dataMap;
 	}
 	
 	public void parse() {
@@ -168,7 +169,8 @@ public class RDBFileReader {
 				System.out.println("Key = " + key);
 				String value = readLengthEncodedString(stream);
 				System.out.println("Value = " + value);
-				dataMap.put(key, new Data(value, Instant.MAX));
+				this.dataMap.put(key, new Data(value, Instant.MAX));
+				Storage.set(key, value);
 			}
 		} while (nextByte != -1);
 	}
