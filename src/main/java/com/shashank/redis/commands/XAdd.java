@@ -20,6 +20,6 @@ public class XAdd extends CommandHandler {
 			StreamStorage.addEntry(streamKey, id, key, val);
 		}
 		
-		return objectFactory.getProtocolEncoder().bulkString(streamKey);
+		return objectFactory.getProtocolEncoder().bulkString(id);
 	}
 }
