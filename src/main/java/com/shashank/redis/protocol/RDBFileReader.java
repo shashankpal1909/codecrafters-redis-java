@@ -182,8 +182,12 @@ public class RDBFileReader {
 					Storage.set(key, value);
 					this.dataMap.put(key, new Data(value, Instant.MAX));
 				} else {
-					Storage.set(key, value, expiresIn);
-					this.dataMap.put(key, new Data(value, Instant.now().plusMillis(expiresIn)));
+					long epochMilli = expiresIn - System.currentTimeMillis();
+					System.out.println("expiresIn = " + expiresIn);
+					System.out.println("epochMilli = " + epochMilli);
+					System.out.println("System.currentTimeMillis() = " + System.currentTimeMillis());
+					Storage.set(key, value, epochMilli);
+					this.dataMap.put(key, new Data(value, Instant.ofEpochMilli(expiresIn)));
 				}
 			}
 		} while (nextByte != -1);
@@ -193,8 +197,11 @@ public class RDBFileReader {
 		long expireTime;
 		if (flag == (byte) 0xFD) {
 			expireTime = Integer.toUnsignedLong(stream.readInt());
+			System.out.println("{in seconds} expireTime = " + expireTime);
+			expireTime *= 1000;
 		} else if (flag == (byte) 0xFC) {
 			expireTime = stream.readLong();
+			System.out.println("{in msecs} expireTime = " + expireTime);
 		} else {
 			throw new RuntimeException("Invalid expiry time flag");
 		}
