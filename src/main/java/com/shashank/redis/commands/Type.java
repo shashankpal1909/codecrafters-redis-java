@@ -1,7 +1,8 @@
 package com.shashank.redis.commands;
 
 import com.shashank.redis.config.ObjectFactory;
-import com.shashank.redis.storage.Storage;
+import com.shashank.redis.storage.DataType;
+import com.shashank.redis.storage.DataTypeStorage;
 
 public class Type extends CommandHandler {
 	
@@ -12,10 +13,10 @@ public class Type extends CommandHandler {
 	@Override
 	public byte[] execute(String[] args) {
 		String key = args[1];
-		String value = Storage.get(key);
+		DataType dataType = DataTypeStorage.get(key);
 		
-		if (value == null) return objectFactory.getProtocolEncoder().simpleString("none");
-		else return objectFactory.getProtocolEncoder().simpleString("string");
+		if (dataType == null) return objectFactory.getProtocolEncoder().simpleString("none");
+		else return objectFactory.getProtocolEncoder().simpleString(dataType.toString().toLowerCase());
 	}
 	
 }

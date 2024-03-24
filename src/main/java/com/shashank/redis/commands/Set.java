@@ -1,7 +1,7 @@
 package com.shashank.redis.commands;
 
 import com.shashank.redis.config.ObjectFactory;
-import com.shashank.redis.storage.Storage;
+import com.shashank.redis.storage.KeyValueStorage;
 
 public class Set extends CommandHandler implements Replicable {
 	
@@ -18,12 +18,12 @@ public class Set extends CommandHandler implements Replicable {
 			switch (param) {
 				case "px" -> {
 					Long expiresIn = Long.parseLong(args[4]);
-					Storage.set(key, value, expiresIn);
+					KeyValueStorage.set(key, value, expiresIn);
 				}
 				default -> throw new RuntimeException(String.format("Invalid parameter: %s", param));
 			}
 		} else {
-			Storage.set(key, value);
+			KeyValueStorage.set(key, value);
 		}
 		
 		return objectFactory.getProtocolEncoder().simpleString("OK");

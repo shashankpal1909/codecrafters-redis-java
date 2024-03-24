@@ -2,7 +2,7 @@ package com.shashank.redis.protocol;
 
 import com.ning.compress.lzf.LZFDecoder;
 import com.shashank.redis.storage.Data;
-import com.shashank.redis.storage.Storage;
+import com.shashank.redis.storage.KeyValueStorage;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -179,14 +179,14 @@ public class RDBFileReader {
 				System.out.println("Value = " + value);
 				
 				if (expiresIn == null) {
-					Storage.set(key, value);
+					KeyValueStorage.set(key, value);
 					this.dataMap.put(key, new Data(value, Instant.MAX));
 				} else {
 					long epochMilli = expiresIn - System.currentTimeMillis();
 					System.out.println("expiresIn = " + expiresIn);
 					System.out.println("epochMilli = " + epochMilli);
 					System.out.println("System.currentTimeMillis() = " + System.currentTimeMillis());
-					Storage.set(key, value, epochMilli);
+					KeyValueStorage.set(key, value, epochMilli);
 					this.dataMap.put(key, new Data(value, Instant.ofEpochMilli(expiresIn)));
 				}
 			}
