@@ -194,19 +194,22 @@ public class RDBFileReader {
 	}
 	
 	private long readExpiryTime(DataInputStream stream, byte flag) throws IOException {
-		long expireTime;
+		long expireTime = 0L;
 		if (flag == (byte) 0xFD) {
-			expireTime = Integer.toUnsignedLong(stream.readInt());
+			int signedIntValue = Integer.reverseBytes(stream.readInt());
+			expireTime = ((long) signedIntValue) & 0xFFFFFFFFL;
+			expireTime *= 1000L;
 			System.out.println("{in seconds} expireTime = " + expireTime);
-			expireTime *= 1000;
 		} else if (flag == (byte) 0xFC) {
-			expireTime = stream.readLong();
+			long signedLongValue = Long.reverseBytes(stream.readLong());
+			expireTime = signedLongValue & 0x7FFFFFFFFFFFFFFFL; // Using only positive values
 			System.out.println("{in msecs} expireTime = " + expireTime);
 		} else {
 			throw new RuntimeException("Invalid expiry time flag");
 		}
 		return expireTime;
 	}
+	
 	
 	public int getRdbVersion() {
 		return rdbVersion;
