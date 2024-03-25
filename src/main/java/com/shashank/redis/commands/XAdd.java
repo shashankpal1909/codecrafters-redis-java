@@ -25,7 +25,7 @@ public class XAdd extends CommandHandler {
 			return objectFactory.getProtocolEncoder().simpleError(String.format("ERR %s", error));
 		}
 		
-		addStreamEntries(streamKey, args);
+		addStreamEntries(streamKey, timestamp, sequenceNumber, args);
 		
 		return objectFactory.getProtocolEncoder().bulkString(combinedId);
 	}
@@ -54,12 +54,12 @@ public class XAdd extends CommandHandler {
 		return null;
 	}
 	
-	private void addStreamEntries(String streamKey, String[] args) {
+	private void addStreamEntries(String streamKey, long timestamp, long sequenceNumber, String[] args) {
 		for (int i = 3; i < args.length; i += 2) {
 			String key = args[i];
 			String val = args[i + 1];
 			
-			StreamStorage.addEntry(streamKey, key, val);
+			StreamStorage.addEntry(streamKey, timestamp, sequenceNumber, key, val);
 		}
 	}
 }
