@@ -71,7 +71,7 @@ public class XAdd extends CommandHandler {
 	private String validateTimestampAndSequenceNumber(String streamKey, long timestamp) {
 		Stream stream = StreamStorage.get(streamKey);
 		
-		if (timestamp <= 0) {
+		if (timestamp < 0) {
 			return "The ID specified in XADD must be greater than 0-0";
 		}
 		
