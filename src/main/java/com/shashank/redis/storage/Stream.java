@@ -32,7 +32,8 @@ public class Stream {
 			return node;
 		}).getVal();
 		
-		streamEntry.addStreamEntry(key, val);
+		if (timestamp == 0) streamEntry.addStreamEntry(1L, key, val);
+		else streamEntry.addStreamEntry(key, val);
 	}
 	
 	private void updateTail(Node<StreamEntry> node) {

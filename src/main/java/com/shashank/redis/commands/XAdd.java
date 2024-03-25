@@ -16,8 +16,10 @@ public class XAdd extends CommandHandler {
 		String streamKey = args[1];
 		String combinedId = args[2];
 		
-		String timestampStr = combinedId.split("-")[0];
-		String sequenceNumberStr = combinedId.split("-")[1];
+		String[] split = combinedId.split("-");
+		
+		String timestampStr = split.length > 0 ? split[0] : "*";
+		String sequenceNumberStr = split.length > 1 ? split[1] : "*";
 		
 		long timestamp, sequenceNumber;
 		
