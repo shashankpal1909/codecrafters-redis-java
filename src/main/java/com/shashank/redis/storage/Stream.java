@@ -13,6 +13,10 @@ public class Stream {
 		this.entries = new ConcurrentHashMap<>();
 	}
 	
+	public StreamEntry get(Long timestamp) {
+		return entries.get(timestamp).getVal();
+	}
+	
 	public Map<Long, Node<StreamEntry>> getEntries() {
 		return entries;
 	}

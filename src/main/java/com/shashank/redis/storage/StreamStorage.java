@@ -11,10 +11,11 @@ public class StreamStorage {
 	}
 	
 	public static void addEntry(String streamName, long timestamp, String key, String val) {
-		Stream stream = streams.computeIfAbsent(streamName, k -> {
-			createStream(k);
-			return streams.get(k);
-		});
+		if (!streams.containsKey(streamName)) {
+			createStream(streamName);
+		}
+		
+		Stream stream = streams.get(streamName);
 		stream.addEntry(timestamp, key, val);
 	}
 	
@@ -23,13 +24,13 @@ public class StreamStorage {
 		DataTypeStorage.set(name, DataType.STREAM);
 	}
 	
-	public static void addEntry(String streamName, long timestamp, long id, String key, String val) {
+	public static void addEntry(String streamName, long timestamp, long sequenceNumber, String key, String val) {
 		if (!streams.containsKey(streamName)) {
 			createStream(streamName);
 		}
 		
 		Stream stream = streams.get(streamName);
-		stream.addEntry(timestamp, id, key, val);
+		stream.addEntry(timestamp, sequenceNumber, key, val);
 	}
 	
 	public static void addEntry(String streamName, String key, String val) {
