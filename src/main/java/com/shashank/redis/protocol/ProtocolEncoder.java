@@ -30,4 +30,8 @@ public class ProtocolEncoder {
 		return String.format("+%s%s", value, CRLF).getBytes();
 	}
 	
+	public byte[] simpleError(String value) {
+		return String.format("-%s%s", value, CRLF).getBytes();
+	}
+	
 }

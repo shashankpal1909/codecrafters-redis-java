@@ -5,40 +5,52 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Stream {
 	
-	private final Map<String, String> entries;
-	private final String name;
-	private final String id;
+	private final Map<Long, Node<StreamEntry>> entries;
+	private Node<StreamEntry> head;
+	private Node<StreamEntry> tail;
 	
-	public Stream(String name) {
-		this.id = String.valueOf(generateUniqueID());
-		this.name = name;
+	public Stream() {
 		this.entries = new ConcurrentHashMap<>();
 	}
 	
-	private long generateUniqueID() {
-		return System.currentTimeMillis();
-	}
-	
-	public Stream(String id, String name) {
-		this.id = id;
-		this.name = name;
-		this.entries = new ConcurrentHashMap<>();
-	}
-	
-	public Map<String, String> getEntries() {
+	public Map<Long, Node<StreamEntry>> getEntries() {
 		return entries;
 	}
 	
-	public String getId() {
-		return id;
-	}
-	
 	public void addEntry(String key, String val) {
-		entries.put(key, val);
+		addEntry(System.currentTimeMillis(), key, val);
 	}
 	
-	public String getName() {
-		return name;
+	public void addEntry(long timestamp, String key, String val) {
+		StreamEntry streamEntry = entries.computeIfAbsent(timestamp, k -> {
+			Node<StreamEntry> node = new Node<>(k, new StreamEntry(k));
+			updateTail(node);
+			return node;
+		}).getVal();
+		
+		streamEntry.addStreamEntry(key, val);
 	}
 	
+	private void updateTail(Node<StreamEntry> node) {
+		if (head == null) {
+			head = node;
+		} else {
+			tail.next = node;
+		}
+		tail = node;
+	}
+	
+	public void addEntry(long timestamp, long id, String key, String val) {
+		StreamEntry streamEntry = entries.computeIfAbsent(timestamp, k -> {
+			Node<StreamEntry> node = new Node<>(k, new StreamEntry(k));
+			updateTail(node);
+			return node;
+		}).getVal();
+		
+		streamEntry.addStreamEntry(id, key, val);
+	}
+	
+	public StreamEntry getLastEntry() {
+		return tail != null ? tail.getVal() : null;
+	}
 }
