@@ -35,6 +35,10 @@ public class StreamEntry {
 		return entries;
 	}
 	
+	public Map<String, String> get(long sequenceNumber) {
+		return entries.get(sequenceNumber);
+	}
+	
 	public long getTimestamp() {
 		return timestamp;
 	}

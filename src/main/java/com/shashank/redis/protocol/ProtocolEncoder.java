@@ -1,12 +1,28 @@
 package com.shashank.redis.protocol;
 
-import com.shashank.redis.utils.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 
 public class ProtocolEncoder {
 	
 	private static final String CRLF = "\r\n";
+	
+	public byte[] nestedArray(List<Object> values) {
+		byte[] response = String.format("*%s%s", values.size(), CRLF).getBytes();
+		List<byte[]> bulkStrings = values.stream().map(item -> {
+			if (item instanceof String) {
+				return bulkString((String) item);
+			} else if (item instanceof List) {
+				return nestedArray((List<Object>) item);
+			}
+			return null;
+		}).toList();
+		for (byte[] bulkString : bulkStrings) {
+			response = ArrayUtils.addAll(response, bulkString);
+		}
+		return response;
+	}
 	
 	public byte[] array(List<String> values) {
 		byte[] response = String.format("*%s%s", values.size(), CRLF).getBytes();
