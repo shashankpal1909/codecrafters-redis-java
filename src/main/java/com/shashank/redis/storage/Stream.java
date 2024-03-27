@@ -28,16 +28,20 @@ public class Stream {
 	}
 	
 	public synchronized void addEntry(long timestamp, String key, String val) {
-		StreamEntry streamEntry = entries.computeIfAbsent(timestamp, StreamEntry::new);
-		timestamps.add(timestamp);
+		StreamEntry streamEntry = entries.computeIfAbsent(timestamp, k -> {
+			timestamps.add(k);
+			return new StreamEntry(k);
+		});
 		
 		if (timestamp == 0 && streamEntry.get(1) == null) streamEntry.addStreamEntry(1L, key, val);
 		else streamEntry.addStreamEntry(key, val);
 	}
 	
 	public synchronized void addEntry(long timestamp, long id, String key, String val) {
-		StreamEntry streamEntry = entries.computeIfAbsent(timestamp, StreamEntry::new);
-		timestamps.add(timestamp);
+		StreamEntry streamEntry = entries.computeIfAbsent(timestamp, k -> {
+			timestamps.add(k);
+			return new StreamEntry(k);
+		});
 		
 		streamEntry.addStreamEntry(id, key, val);
 	}
@@ -47,10 +51,44 @@ public class Stream {
 	}
 	
 	public List<StreamEntry> getEntries(long startTimestamp, long endTimestamp) {
-		int startIndex = upperBoundIndex(startTimestamp);
-		int endIndex = lowerBoundIndex(endTimestamp);
+		int startIndex = lowerBound(timestamps, startTimestamp);
+		int endIndex = upperBound(timestamps, endTimestamp);
 		
 		return timestamps.subList(startIndex, endIndex + 1).stream().map(entries::get).toList();
+	}
+	
+	public static int lowerBound(List<Long> list, long target) {
+		int s = 0;
+		int e = list.size();
+		while (s != e) {
+			int mid = s + e >> 1;
+			if (list.get(mid) < target) {
+				s = mid + 1;
+			} else {
+				e = mid;
+			}
+		}
+		if (s == list.size()) {
+			return 0;
+		}
+		return s;
+	}
+	
+	public static int upperBound(List<Long> list, long target) {
+		int s = 0;
+		int e = list.size();
+		while (s != e) {
+			int mid = s + e >> 1;
+			if (list.get(mid) <= target) {
+				s = mid + 1;
+			} else {
+				e = mid;
+			}
+		}
+		if (s == list.size()) {
+			return list.size() - 1;
+		}
+		return s;
 	}
 	
 	public int upperBoundIndex(long target) {

@@ -42,6 +42,8 @@ public class XRange extends CommandHandler {
 			List<Object> temp = new ArrayList<>();
 			streamEntryList.add(temp);
 			
+			List<Object> tempArr1 = new ArrayList<>();
+			
 			for (var sequenceNumber : streamEntry.getStreamEntries().keySet()) {
 				
 				if (startTimestamp == streamEntry.getTimestamp() && sequenceNumber < startSequenceNumber) {
@@ -52,13 +54,19 @@ public class XRange extends CommandHandler {
 					break;
 				}
 				
-				temp.add(String.format("%s-%s", streamEntry.getTimestamp(), sequenceNumber));
+				List<Object> tempArr2 = new ArrayList<>();
+				tempArr2.add(String.format("%s-%s", streamEntry.getTimestamp(), sequenceNumber));
 				
+				List<String> values = new ArrayList<>();
 				for (String key : streamEntry.get(sequenceNumber).keySet()) {
-					temp.add(key);
-					temp.add(streamEntry.get(sequenceNumber).get(key));
+					values.add(key);
+					values.add(streamEntry.get(sequenceNumber).get(key));
 				}
+				
+				tempArr2.add(values);
+				tempArr1.add(tempArr2);
 			}
+			temp.add(tempArr1);
 		}
 		
 		return objectFactory.getProtocolEncoder().nestedArray(result);
