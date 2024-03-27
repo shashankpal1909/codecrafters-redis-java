@@ -35,14 +35,8 @@ public class XRange extends CommandHandler {
 		
 		List<Object> result = new ArrayList<>();
 		
-		List<Object> streamEntryList = new ArrayList<>();
-		result.add(streamEntryList);
-		
 		for (StreamEntry streamEntry : streamEntries) {
-			List<Object> temp = new ArrayList<>();
-			streamEntryList.add(temp);
 			
-			List<Object> tempArr1 = new ArrayList<>();
 			
 			for (var sequenceNumber : streamEntry.getStreamEntries().keySet()) {
 				
@@ -64,9 +58,9 @@ public class XRange extends CommandHandler {
 				}
 				
 				tempArr2.add(values);
-				tempArr1.add(tempArr2);
+				result.add(tempArr2);
 			}
-			temp.add(tempArr1);
+			
 		}
 		
 		return objectFactory.getProtocolEncoder().nestedArray(result);
