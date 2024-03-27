@@ -21,7 +21,7 @@ public class XRange extends CommandHandler {
 		String[] end = args[3].split("-");
 		
 		long startTimestamp = args[2].equals("-") ? Long.MIN_VALUE : Long.parseLong(start[0]);
-		long endTimestamp = Long.parseLong(end[0]);
+		long endTimestamp = args[3].equals("+") ? Long.MAX_VALUE : Long.parseLong(end[0]);
 		
 		long startSequenceNumber = -1;
 		long endSequenceNumber = -1;
