@@ -155,16 +155,19 @@ public class Stream {
 					continue;
 				}
 				
-				temp_2.add(String.format("%s-%s", timestamp, sequenceNumber));
+				List<Object> temp_3 = new ArrayList<>();
+				temp_3.add(String.format("%s-%s", timestamp, sequenceNumber));
 				
-				List<String> temp_3 = new ArrayList<>();
+				List<String> temp_4 = new ArrayList<>();
 				for (String key : streamEntry.get(sequenceNumber).keySet()) {
-					temp_3.add(key);
-					temp_3.add(streamEntry.get(sequenceNumber).get(key));
+					temp_4.add(key);
+					temp_4.add(streamEntry.get(sequenceNumber).get(key));
 				}
 				
+				temp_3.add(temp_4);
 				temp_2.add(temp_3);
 			}
+			
 			temp_1.add(temp_2);
 		}
 		
