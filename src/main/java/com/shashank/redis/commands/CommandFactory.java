@@ -38,7 +38,7 @@ public class CommandFactory {
 		
 		ECHO(Echo.class), PING(Ping.class), SET(Set.class), GET(Get.class), INFO(Info.class), REPLCONF(ReplConf.class)
 		, PSYNC(PSync.class), WAIT(Wait.class), CONFIG(Config.class), KEYS(Keys.class), TYPE(Type.class),
-		XADD(XAdd.class), XRANGE(XRange.class);
+		XADD(XAdd.class), XRANGE(XRange.class), XREAD(XRead.class);
 		
 		private final Class<? extends Handler> handler;
 		

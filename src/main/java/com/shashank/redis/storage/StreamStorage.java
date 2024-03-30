@@ -20,7 +20,7 @@ public class StreamStorage {
 	}
 	
 	public static void createStream(String name) {
-		streams.putIfAbsent(name, new Stream());
+		streams.putIfAbsent(name, new Stream(name));
 		DataTypeStorage.set(name, DataType.STREAM);
 	}
 	

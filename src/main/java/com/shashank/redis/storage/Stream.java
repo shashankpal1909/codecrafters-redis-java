@@ -7,10 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Stream {
 	
+	private final String streamKey;
 	private final Map<Long, StreamEntry> entries;
 	private final List<Long> timestamps;
 	
-	public Stream() {
+	public Stream(String streamKey) {
+		this.streamKey = streamKey;
 		this.entries = new ConcurrentHashMap<>();
 		this.timestamps = new ArrayList<>();
 	}
@@ -121,4 +123,53 @@ public class Stream {
 		return low;
 	}
 	
+	public List<Object> xRead(long targetTimestamp, long targetSequenceNumber) {
+		int index = upperBound(timestamps, targetTimestamp);
+		
+		List<Object> result = new ArrayList<>();
+		
+		// [
+		//   [
+		// 		"stream_key",
+		//     [
+		//       [
+		// 		"0-1",
+		//         [
+		// 		"temperature",
+		// 				"96"
+		//         ]
+		//       ]
+		//     ]
+		//   ]
+		// ]
+		
+		List<Object> temp_1 = new ArrayList<>();
+		temp_1.add(streamKey);
+		
+		for (int i = index; i < timestamps.size(); i++) {
+			List<Object> temp_2 = new ArrayList<>();
+			Long timestamp = timestamps.get(i);
+			StreamEntry streamEntry = entries.get(timestamp);
+			for (var sequenceNumber : streamEntry.getStreamEntries().keySet()) {
+				if (timestamp == targetTimestamp && sequenceNumber <= targetSequenceNumber) {
+					continue;
+				}
+				
+				temp_2.add(String.format("%s-%s", timestamp, sequenceNumber));
+				
+				List<String> temp_3 = new ArrayList<>();
+				for (String key : streamEntry.get(sequenceNumber).keySet()) {
+					temp_3.add(key);
+					temp_3.add(streamEntry.get(sequenceNumber).get(key));
+				}
+				
+				temp_2.add(temp_3);
+			}
+			temp_1.add(temp_2);
+		}
+		
+		ArrayList<Object> objects = new ArrayList<>();
+		objects.add(temp_1);
+		return objects;
+	}
 }
