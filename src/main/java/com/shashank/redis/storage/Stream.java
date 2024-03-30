@@ -171,8 +171,6 @@ public class Stream {
 			temp_1.add(temp_2);
 		}
 		
-		ArrayList<Object> objects = new ArrayList<>();
-		objects.add(temp_1);
-		return objects;
+		return temp_1;
 	}
 }
